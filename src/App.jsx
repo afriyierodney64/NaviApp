@@ -268,17 +268,19 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center font-sans antialiased p-4">
-      <div className="w-full max-w-[400px] h-[800px] bg-slate-950 rounded-[3rem] overflow-hidden shadow-2xl relative border-[12px] border-slate-800">
-        {/* Mobile Notch Mockup */}
-        <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-50">
+    <div className="fixed inset-0 bg-slate-900 flex items-center justify-center font-sans antialiased sm:p-4 overflow-hidden">
+      <div className="w-full h-full sm:w-[400px] sm:h-[800px] bg-slate-950 sm:rounded-[3rem] overflow-hidden shadow-2xl relative sm:border-[12px] border-slate-800 flex flex-col">
+        {/* Mobile Notch Mockup - Only show on desktop simulation */}
+        <div className="hidden sm:flex absolute top-0 inset-x-0 h-6 justify-center z-50">
            <div className="w-1/3 h-5 bg-slate-800 rounded-b-2xl"></div>
         </div>
 
-        {currentScreen === 'home' && <HomeScreen />}
-        {currentScreen === 'settings' && <SettingsScreen />}
-        {currentScreen === 'saved' && <SavedScreen />}
-        {currentScreen === 'navigation' && <ActiveNavigationScreen />}
+        <div className="flex-1 relative overflow-hidden h-full">
+          {currentScreen === 'home' && <HomeScreen />}
+          {currentScreen === 'settings' && <SettingsScreen />}
+          {currentScreen === 'saved' && <SavedScreen />}
+          {currentScreen === 'navigation' && <ActiveNavigationScreen />}
+        </div>
       </div>
     </div>
   );
