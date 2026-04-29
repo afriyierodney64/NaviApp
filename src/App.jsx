@@ -29,41 +29,57 @@ export default function App() {
 
   const handleVoiceSearch = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
-    if (!SpeechRecognition) {
-      setIsListening(true);
-      setTimeout(() => {
-        setIsListening(false);
-        setSpokenText("Main Library");
-        speak("Navigating to Main Library. Continue forward.");
-        setCurrentScreen('navigation');
-      }, 2000);
-      return;
-    }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-
-    recognition.onstart = () => {
-      setIsListening(true);
-      triggerVibrate(50); // Light tap when listening starts
-    };
-
-    recognition.onresult = (event) => {
-      const currentTranscript = event.results[0][0].transcript;
-      setSpokenText(currentTranscript);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-      if (spokenText) {
-        speak(`Navigating to ${spokenText}. Continue forward for 50 feet.`);
-        setCurrentScreen('navigation');
+    const runRecognition = () => {
+      if (!SpeechRecognition) {
+        setIsListening(true);
+        setTimeout(() => {
+          setIsListening(false);
+          const mockPlace = "Main Library";
+          setSpokenText(mockPlace);
+          speak(`Navigating to ${mockPlace}. Continue forward.`);
+          setCurrentScreen('navigation');
+        }, 2500);
+        return;
       }
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        triggerVibrate(50); // Light tap when listening starts
+      };
+
+      recognition.onresult = (event) => {
+        const currentTranscript = event.results[0][0].transcript;
+        if (currentTranscript) {
+          setSpokenText(currentTranscript);
+          speak(`Navigating to ${currentTranscript}. Continue forward for 50 feet.`);
+          setCurrentScreen('navigation');
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
     };
 
-    recognition.start();
+    // Ask question first if voice is enabled
+    if (voiceEnabled) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance("Where are you headed?");
+      utterance.rate = 0.9;
+      utterance.onend = () => {
+        runRecognition();
+      };
+      window.speechSynthesis.speak(utterance);
+    } else {
+      runRecognition();
+    }
   };
 
   const startNavigationTo = (place) => {
